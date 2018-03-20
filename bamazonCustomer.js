@@ -1,6 +1,7 @@
 'use strict';
 var inquirer = require('inquirer');
 var mysql = require("mysql");
+var maxIdNum = 0;
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -17,6 +18,7 @@ connection.connect(function(err) {
     console.log("connected as id " + connection.threadId + "\n");
     showProducts();
     productSearch();
+
 });
 
 // Shows all products in database.
@@ -37,11 +39,11 @@ function searchProduct(idInput, quantityInput) {
     var totalPrice = 0;
     var currentStock = 0;
 
-
+    //Check to see if id is a negative number. If negative will return user to beginning.
     if (idInput <0) {
         console.log("Finally working bug free.");
-        return;
         productSearch();
+        return;
     }
 
     console.log("\nSearching if that product is in stock and how many are available to purchase.\n");
@@ -56,6 +58,7 @@ function searchProduct(idInput, quantityInput) {
 
         //Corrects id entered to search mySql id_name column(array) properly. "id_input"
         idInput = idInput-1;
+
         //If statements to check that ID and Quantity entered are valid and if we have enough available.
         if (idInput < 0) {
             console.log("Sorry, we do not have a product matching the id you entered. Please try again.");
@@ -84,6 +87,19 @@ function searchProduct(idInput, quantityInput) {
         }
     });
 }
+
+//Grabs the MAX item_id from products table. This will be used to ensure that if user enters last item MySql DB...
+//... that it will properly retrieve the data and not give an error.
+function maxId(input) {
+    var query = "SELECT * FROM products where item_id = (SELECT MAX(item_id) FROM products)";
+    connection.query(query, {item_id: input.item_id}, function (err, res) {
+        //checks for errors
+        if (err) throw err;
+            maxIdNum = res[0].item_id;
+            console.log(maxIdNum);
+    });
+}
+
 
 
 // Questions local Database for inquirer npm package.
@@ -122,6 +138,10 @@ function productSearch() {
 
         console.log(JSON.stringify(answers, null, '  '));
 
+        maxId(idInput);
+        // if (idInput == maxId().value) {
+        //     idInput--;
+        // }
         searchProduct(idInput, quantityInput);
     });
 }
