@@ -16,6 +16,7 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     showProducts();
+    productSearch();
 });
 
 // Shows all products in database.
@@ -31,31 +32,40 @@ function showProducts() {
 
 // Shows if specified ID entered in CLI is in products database. Returns to user if we have product and current quantity.
 function searchProduct(j, k) {
+    var quantity = k;
+    var totalPrice = 0;
+    console.log("\nSearching if that product is in stock.\n");
 
-    console.log("Searching if that product is in stock with the selected quantity entered.\n");
     var query = "SELECT item_id, stock_quantity, product_name, price FROM products";
-    connection.query(query, {item_id: j.item_id, stock_quantity: k.stock_quantity, price: z.price}, function(err, res) {
-
+    connection.query(query, {item_id: j.item_id}, function(err, res) {
 
         if (err) throw err;
 
-        // Search database for ID and Quantity of items that customer has entered.
-        console.log("Congrats, we have '"+ res[j].product_name +"' in stock!\n"
-            + "We currently have '" + res[k].stock_quantity + "' left to purchase.\n\n"
-        + "Your total price for '" + res[k].stock_quantity + "' '" + res[j].product_name + "' is"
-        + " $" + res[z].price + ".");
-        connection.end();
+        //Corrects id entered to search mySql id_name column(array) properly.
+        j = j-1;
+        if (j < 0) {
+            console.log("Sorry, we do not have a product match the id you entered. Please try again.");
+            productSearch();
+        } else {
+            totalPrice = res[j].price * k;
+            // Search database for ID and Quantity of items that customer has entered.
+            console.log("Congrats, we have '" + res[j].product_name + "' in stock!\n"
+                + "We currently have '" + res[j].stock_quantity + "' left to purchase. The price is currently" +
+                " $" + res[j].price + " per item.\n\n"
+                + "Your total price for '" + quantity + "' '" + res[j].product_name + "' is"
+                + " $" + totalPrice + ".");
+            connection.end();
+        }
     });
 }
 
 
-// Questions local Database for inquierer npm package.
+// Questions local Database for inquirer npm package.
 var questions = [
-
     {
         type: 'input',
         name: 'id',
-        message: 'What is the id of the name of the product you would like to buy?',
+        message: 'What is the id of the product you would like to buy?',
         validate: function(value) {
             var valid = !isNaN(parseFloat(value));
             return valid || 'Please enter a number';
@@ -78,12 +88,14 @@ var questions = [
 ];
 
 
-inquirer.prompt(questions).then(answers => {
-    var idInput = answers.id;
-    var quantityInput = answers.quantity;
-    console.log(JSON.stringify(answers, null, '  '));
+function productSearch() {
+    inquirer.prompt(questions).then(answers => {
+        var idInput = answers.id;
+        var quantityInput = answers.quantity;
+        console.log(JSON.stringify(answers, null, '  '));
 
-    searchProduct(idInput, quantityInput);
+        searchProduct(idInput, quantityInput);
+    });
+}
 
 
-});
