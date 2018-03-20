@@ -29,19 +29,23 @@ function showProducts() {
     });
 }
 
-// Shows if specified ID entered in CLI is in products database.
+// Shows if specified ID entered in CLI is in products database. Returns to user if we have product and current quantity.
 function searchProduct(j, k) {
-    console.log("Searching if that product is in stock with the selected quantity entered.\n");
-    var query = "SELECT item_id, stock_quantity, product_name FROM products";
-    connection.query(query, {item_id: j.item_id, stock_quantity: k.stock_quantity}, function(err, res) {
-        if (err) throw err;
-        // Search database for ID and Quantity of items that customer has entered.
 
-        for (var i = 0; i <res.length; i++) {
-            console.log("Congrats, we have that in stock! " + res[j].product_name + " WOWZA " + res[k].stock_quantity);
-        }
+    console.log("Searching if that product is in stock with the selected quantity entered.\n");
+    var query = "SELECT item_id, stock_quantity, product_name, price FROM products";
+    connection.query(query, {item_id: j.item_id, stock_quantity: k.stock_quantity, price: z.price}, function(err, res) {
+
+
+        if (err) throw err;
+
+        // Search database for ID and Quantity of items that customer has entered.
+        console.log("Congrats, we have '"+ res[j].product_name +"' in stock!\n"
+            + "We currently have '" + res[k].stock_quantity + "' left to purchase.\n\n"
+        + "Your total price for '" + res[k].stock_quantity + "' '" + res[j].product_name + "' is"
+        + " $" + res[z].price + ".");
         connection.end();
-});
+    });
 }
 
 
@@ -78,7 +82,6 @@ inquirer.prompt(questions).then(answers => {
     var idInput = answers.id;
     var quantityInput = answers.quantity;
     console.log(JSON.stringify(answers, null, '  '));
-    console.log("Testing " + idInput + "||" + quantityInput);
 
     searchProduct(idInput, quantityInput);
 
