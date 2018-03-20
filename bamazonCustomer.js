@@ -31,46 +31,54 @@ function showProducts() {
 }
 
 // Shows if specified ID entered in CLI is in products database. Returns to user if we have product and current quantity.
-function searchProduct(j, k) {
-    var quantityInput = k;
+function searchProduct(idInput, quantityInput) {
+    var idInput = idInput;
+    var quantityInput = quantityInput;
     var totalPrice = 0;
     var currentStock = 0;
+
+
+    if (idInput <0) {
+        console.log("Finally working bug free.");
+        return;
+        productSearch();
+    }
 
     console.log("\nSearching if that product is in stock and how many are available to purchase.\n");
 
     var query = "SELECT item_id, stock_quantity, product_name, price FROM products";
-    connection.query(query, {item_id: j.item_id}, function(err, res) {
+    connection.query(query, {item_id: idInput.item_id}, function(err, res) {
         //checks for errors
         if (err) throw err;
 
-        //Sets current stock to equal stock_quantity of the row of J (item_id).
-        currentStock = res[j].stock_quantity;
+        //Sets current stock to equal stock_quantity of the row of id_input (item_id).
+        currentStock = res[idInput].stock_quantity;
 
-        //Corrects id entered to search mySql id_name column(array) properly. "j"
-        j = j-1;
+        //Corrects id entered to search mySql id_name column(array) properly. "id_input"
+        idInput = idInput-1;
         //If statements to check that ID and Quantity entered are valid and if we have enough available.
-        if (j < 0) {
+        if (idInput < 0) {
             console.log("Sorry, we do not have a product matching the id you entered. Please try again.");
             productSearch();
-
         }
-        if (quantityInput > currentStock) {
+
+        else if (quantityInput > currentStock) {
             console.log("Sorry we do not currently have that many in stock. Please try again.");
             productSearch();
         }
-        if (quantityInput <= 0) {
-            console.log("Sorry you must enter a number greater than 0. Please try again.");
+        else if (quantityInput <= 0) {
+            console.log("Sorry you must enter a quantity greater than 0. Please try again.");
             productSearch();
         }
 
         //If item_id and there is enough stock_quantity available, calculate total cost.
         else {
-            totalPrice = res[j].price * k;
+            totalPrice = res[idInput].price * quantityInput;
             // Search database for ID and Quantity of items that customer has entered.
-            console.log("Congrats, we have '" + res[j].product_name + "' in stock!\n"
-                + "We currently have '" + res[j].stock_quantity + "' left to purchase. The price is currently" +
-                " $" + res[j].price + " per item.\n\n"
-                + "Your total price for '" + quantityInput + "' '" + res[j].product_name + "' is"
+            console.log("Congrats, we have '" + res[idInput].product_name + "' in stock!\n"
+                + "We currently have '" + res[idInput].stock_quantity + "' left to purchase. The price is currently" +
+                " $" + res[idInput].price + " per item.\n\n"
+                + "Your total price for '" + quantityInput + "' '" + res[idInput].product_name + "' is"
                 + " $" + totalPrice + ".");
             connection.end();
         }
@@ -88,6 +96,7 @@ var questions = [
             var valid = !isNaN(parseFloat(value));
             return valid || 'Please enter a number';
         },
+
         filter: Number
     },
 
