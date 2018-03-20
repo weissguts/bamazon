@@ -94,12 +94,16 @@ function maxId(input) {
     var query = "SELECT * FROM products where item_id = (SELECT MAX(item_id) FROM products)";
     connection.query(query, {item_id: input.item_id}, function (err, res) {
         //checks for errors
-        if (err) throw err;
-            maxIdNum = res[0].item_id;
-            console.log(maxIdNum);
+        if (err) {throw err;}
+        else {
+            input = res[0].item_id;
+            maxIdNum = input;
+            console.log("MaxId = " + maxIdNum + " Inner Test");
+            
+        }
     });
-}
 
+}
 
 
 // Questions local Database for inquirer npm package.
@@ -139,9 +143,8 @@ function productSearch() {
         console.log(JSON.stringify(answers, null, '  '));
 
         maxId(idInput);
-        // if (idInput == maxId().value) {
-        //     idInput--;
-        // }
+        console.log("MaxId = " + maxIdNum + " Outer Test");
+
         searchProduct(idInput, quantityInput);
     });
 }
