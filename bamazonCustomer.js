@@ -41,7 +41,7 @@ function searchProduct(idInput, quantityInput) {
 
     //Check to see if id is a negative number. If negative will return user to beginning.
     if (idInput <0) {
-        console.log("Finally working bug free.");
+        console.log("Please enter a number greater than 0.");
         productSearch();
         return;
     }
@@ -150,14 +150,13 @@ function productSearch() {
         maxId(idInput).then(function (response) {
 
             if (idInput == response) {
-                maxIdNum = response;
-            }
-            console.log(maxIdNum);
-            if (maxIdNum == idInput) {
                 idInput--;
-                maxIdNum == idInput;
+                console.log(idInput + " TESTTTTT");
+
             }
+            console.log(idInput);
             searchProduct(idInput, quantityInput);
+
         });
         // console.log("MaxId = " + maxId(idInput) + " Outer Test");
 
