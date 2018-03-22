@@ -105,6 +105,7 @@ function maxId(input) {
             deferred.resolve(maxIdNum);
         }
     });
+
     return deferred.promise;
 
 }
@@ -146,10 +147,21 @@ function productSearch() {
 
         console.log(JSON.stringify(answers, null, '  '));
 
-        maxId(idInput);
-        console.log("MaxId = " + maxId(idInput) + " Outer Test");
+        maxId(idInput).then(function (response) {
 
-        searchProduct(idInput, quantityInput);
+            if (idInput == response) {
+                maxIdNum = response;
+            }
+            console.log(maxIdNum);
+            if (maxIdNum == idInput) {
+                idInput--;
+                maxIdNum == idInput;
+            }
+            searchProduct(idInput, quantityInput);
+        });
+        // console.log("MaxId = " + maxId(idInput) + " Outer Test");
+
+
     });
 }
 
