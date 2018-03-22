@@ -1,7 +1,7 @@
 'use strict';
 var inquirer = require('inquirer');
 var mysql = require("mysql");
-var maxIdNum = 0;
+var maxIdNum = '';
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -88,9 +88,12 @@ function searchProduct(idInput, quantityInput) {
     });
 }
 
+var Q = require("q");
+
 //Grabs the MAX item_id from products table. This will be used to ensure that if user enters last item MySql DB...
 //... that it will properly retrieve the data and not give an error.
 function maxId(input) {
+    var deferred = Q.defer();
     var query = "SELECT * FROM products where item_id = (SELECT MAX(item_id) FROM products)";
     connection.query(query, {item_id: input.item_id}, function (err, res) {
         //checks for errors
@@ -99,9 +102,10 @@ function maxId(input) {
             input = res[0].item_id;
             maxIdNum = input;
             console.log("MaxId = " + maxIdNum + " Inner Test");
-            
+            deferred.resolve(maxIdNum);
         }
     });
+    return deferred.promise;
 
 }
 
@@ -143,7 +147,7 @@ function productSearch() {
         console.log(JSON.stringify(answers, null, '  '));
 
         maxId(idInput);
-        console.log("MaxId = " + maxIdNum + " Outer Test");
+        console.log("MaxId = " + maxId(idInput) + " Outer Test");
 
         searchProduct(idInput, quantityInput);
     });
