@@ -41,14 +41,15 @@ function searchProduct(idInput, quantityInput) {
 
     maxId(maxIdNum).then(function (response) {
 
-        if (maxIdNum === response) {
-            maxIdNum--;
-            console.log(maxIdNum + " TESTTTTT");
+        if (maxIdNum > response) {
+            console.log("Please enter a ID within the designated item_id field.");
+            productSearch();
+            return;
         }
 
         //Check to see if id is a negative number. If negative will return user to beginning.
-        if (maxIdNum <0) {
-            console.log("Please enter a number greater than 0.");
+        if (maxIdNum <= 0) {
+            console.log("Please enter an ID greater than 0.");
             productSearch();
             return;
         }
@@ -66,15 +67,7 @@ function searchProduct(idInput, quantityInput) {
             //Sets current stock to equal stock_quantity of the row of id_input (item_id).
             currentStock = res[maxIdNum].stock_quantity;
 
-
-
-            //If statements to check that ID and Quantity entered are valid and if we have enough available.
-            if (maxIdNum < 0) {
-                console.log("Sorry, we do not have a product matching the id you entered. Please try again.");
-                productSearch();
-            }
-
-            else if (quantityInput > currentStock) {
+            if (quantityInput > currentStock) {
                 console.log("Sorry we do not currently have that many in stock. Please try again.");
                 productSearch();
             }
@@ -99,10 +92,10 @@ function searchProduct(idInput, quantityInput) {
 
 }
 
-var Q = require("q");
 
 //Grabs the MAX item_id from products table. This will be used to ensure that if user enters last item MySql DB...
 //... that it will properly retrieve the data and not give an error.
+var Q = require("q");
 function maxId(input) {
     var deferred = Q.defer();
     var query = "SELECT * FROM products where item_id = (SELECT MAX(item_id) FROM products)";
@@ -112,7 +105,7 @@ function maxId(input) {
         else {
             input = res[0].item_id;
             maxIdNum = input;
-            console.log("MaxId = " + maxIdNum + " Inner Test");
+            // console.log("MaxId = " + maxIdNum + " Inner Test");
             deferred.resolve(maxIdNum);
         }
     });
@@ -159,7 +152,6 @@ function productSearch() {
         console.log(JSON.stringify(answers, null, '  '));
 
         searchProduct(idInput, quantityInput);
-
     });
 }
 
