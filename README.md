@@ -4,7 +4,7 @@ Amazon-like storefront with the MySQL. The app will take in orders from customer
 
 ## Video run through
 
-```https://www.youtube.com/watch?v=RJiqzGLoEU8&feature=youtu.be```
+https://www.youtube.com/watch?v=RJiqzGLoEU8&feature=youtu.be
 
 ## Running the tests
 
