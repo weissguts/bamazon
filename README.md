@@ -2,9 +2,9 @@
 
 Amazon-like storefront with the MySQL. The app will take in orders from customers and deplete stock from the store's inventory.
 
-## Getting Started
+## Video run through
 
-Video run through - https://www.youtube.com/watch?v=RJiqzGLoEU8&feature=youtu.be
+```https://www.youtube.com/watch?v=RJiqzGLoEU8&feature=youtu.be```
 
 ## Running the tests
 
